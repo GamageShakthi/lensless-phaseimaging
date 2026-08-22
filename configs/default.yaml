@@ -1,0 +1,62 @@
+# =============================================================================
+# Default Configuration for Lensless Imaging Pipeline
+# =============================================================================
+# Modify these settings to experiment with different setups!
+
+# --- Image Settings ---
+image:
+  size: 128                    # Image resolution (size x size)
+  channels: 1                  # 1 = grayscale, 3 = RGB
+  
+# --- PSF Settings ---
+psf:
+  type: "random_phase_mask"    # Options: gaussian_mixture, random_phase_mask, caustic_pattern
+  feature_size: 5.0            # For random_phase_mask: spatial scale of phase features
+  num_components: 50           # For gaussian_mixture: number of Gaussian blobs
+  seed: 42                     # Random seed for reproducibility
+
+# --- Forward Model ---
+forward_model:
+  noise_std: 0.01              # Gaussian noise standard deviation
+                               # 0.001 = very clean, 0.01 = moderate, 0.1 = very noisy
+
+# --- Classical Reconstruction ---
+wiener:
+  regularization: 0.001        # λ for Wiener filter (try: 0.0001 to 0.1)
+
+admm:
+  rho: 1.0                     # ADMM penalty parameter
+  lambda_tv: 0.005             # TV regularization weight
+  num_iters: 50                # Number of ADMM iterations
+  tv_inner_iters: 20           # Inner iterations for TV proximal operator
+
+# --- Deep Network ---
+network:
+  num_stages: 8                # Number of unrolled ADMM stages
+  num_features: 64             # Feature channels in CNN denoisers
+  num_blocks_per_stage: 3      # Residual blocks per denoiser
+  share_weights: false         # Share weights across stages
+
+# --- Training ---
+training:
+  epochs: 50                   # Number of training epochs
+  batch_size: 4                # Batch size (reduce if GPU memory is limited)
+  learning_rate: 0.0001        # Initial learning rate
+  weight_decay: 0.00001        # L2 regularization
+  num_train_samples: 500       # Number of synthetic training samples
+  num_val_samples: 50          # Number of validation samples
+  save_every: 10               # Save checkpoint every N epochs
+
+# --- Loss Weights ---
+loss:
+  lambda_data: 1.0             # Data fidelity (MSE/L1)
+  lambda_tv: 0.01              # Total Variation
+  lambda_perceptual: 0.0       # Perceptual (VGG) - set > 0 to enable
+  lambda_consistency: 0.0      # Measurement consistency
+  data_loss_type: "l1"         # "mse" or "l1"
+  tv_mode: "isotropic"         # "isotropic" or "anisotropic"
+
+# --- Output ---
+output:
+  results_dir: "results"
+  checkpoint_dir: "pretrained"
