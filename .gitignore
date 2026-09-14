@@ -1,0 +1,10 @@
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# OS Junk
+.DS_Store
+Thumbs.db
